@@ -10,13 +10,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 data.forEach(usuario => {
                     const fila = document.createElement("tr");
                     fila.innerHTML = `
-                        <td>${usuario.id}</td>
-                        <td>${usuario.nombre}</td>
-                        <td>${usuario.correo}</td>
-                        <td>${usuario.rol}</td>
-                        <td>${usuario.estado}</td>
-                        <td><button onclick="eliminarUsuario(${usuario.id})">Eliminar</button></td>
-                    `;
+                    <td>${usuario.id}</td>
+                    <td>${usuario.nombre}</td>
+                    <td>${usuario.correo}</td>
+                    <td>${usuario.rol}</td>
+                    <td>${usuario.estado}</td>
+                    <td>
+  
+                    <button class="btn btn-warning btn-sm me-2"
+        data-bs-toggle="modal"
+        data-bs-target="#modalEditarUsuario"
+        onclick="prepararEdicion(${usuario.id}, '${usuario.nombre}', '${usuario.correo}')">
+    Editar
+</button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarUsuario(${usuario.id})">Eliminar</button>
+                    </td>
+                `;
+                
                     tabla.appendChild(fila);
                 });
             });
@@ -47,6 +57,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
         }
     };
+
+    window.prepararEdicion = (id, nombre, correo) => {
+    document.getElementById("editarId").value = id;
+    document.getElementById("editarNombre").value = nombre;
+    document.getElementById("editarCorreo").value = correo;
+};
+
+document.getElementById("formEditarUsuario").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const datos = new FormData(this);
+    fetch("editar_usuario.php", {
+        method: "POST",
+        body: datos
+    })
+    .then(res => res.text())
+    .then(msg => {
+        alert(msg);
+        cargarUsuarios();
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarUsuario'));
+        modal.hide();
+    });
+});
 
     cargarUsuarios();
 });
